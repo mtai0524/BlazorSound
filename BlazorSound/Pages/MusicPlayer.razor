@@ -1,0 +1,132 @@
+﻿@page "/music-player"
+@inject IWebHostEnvironment Environment
+@inject IJSRuntime JSRuntime
+<h3>Music Player</h3>
+
+@if (mp3Files != null && mp3Files.Any())
+{
+    <ul>
+        @foreach (var file in mp3Files)
+        {
+            if (!string.IsNullOrEmpty(file))
+            {
+                <li>
+                    <button @onclick="() => PlayFile(file)">@file</button>
+                    <button @onclick="() => DeleteFile(file)" class="btn btn-danger btn-sm">Delete</button>
+                </li>
+            }
+        }
+    </ul>
+
+    @if (!string.IsNullOrEmpty(selectedFile))
+    {
+        <audio id="audioPlayer" controls @key="audioKey" @onended="HandleAudioEnded" @ref="audioElement" @attributes="audioAttributes">
+            <source src="@selectedFile" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+    }
+}
+else
+{
+    <p>No MP3 files found.</p>
+}
+<button @onclick=AutoPlay>
+    @if(isAutoplayEnabled == true)
+    {
+        <span>đang bật auto play</span>
+    }
+    else
+    {
+        <span>đang tắt auto play</span>
+    }
+</button>
+
+@code {
+    private List<string?> mp3Files = new List<string?>();
+    private string? selectedFile;
+    private int audioKey;
+    private int currentTrackIndex = -1;
+    private bool isAutoplayEnabled = false;
+    private ElementReference audioElement;
+    private Dictionary<string, object> audioAttributes = new Dictionary<string, object>();
+
+    protected override void OnInitialized()
+    {
+        LoadFiles();
+        AutoPlay();
+    }
+
+    private void LoadFiles()
+    {
+        var uploadPath = Path.Combine(Environment.WebRootPath, "uploads");
+        if (Directory.Exists(uploadPath))
+        {
+            mp3Files = Directory.GetFiles(uploadPath, "*.mp3")
+                                .Select(Path.GetFileName)
+                                .ToList();
+        }
+    }
+    private void AutoPlay()
+    {
+        isAutoplayEnabled = !isAutoplayEnabled;
+        UpdateAudioAttributes();
+    }
+    private void PlayFile(string fileName)
+    {
+        selectedFile = Path.Combine("uploads", fileName);
+        currentTrackIndex = mp3Files.FindIndex(f => f == Path.GetFileName(fileName));
+        audioKey++;
+      
+        StateHasChanged();
+    }
+
+    private void DeleteFile(string fileName)
+    {
+        var filePath = Path.Combine(Environment.WebRootPath, "uploads", fileName);
+        if (File.Exists(filePath))
+        {
+            File.Delete(filePath);
+            LoadFiles(); // Reload
+            if (selectedFile == Path.Combine("uploads", fileName))
+            {
+                selectedFile = null;
+                audioKey++;
+            }
+            StateHasChanged();
+        }
+    }
+
+    private void HandleAudioEnded()
+    {
+        if (currentTrackIndex < mp3Files.Count - 1)
+        {
+            PlayFile(mp3Files[currentTrackIndex + 1]);
+        }
+        else
+        {
+            selectedFile = null;
+            audioKey++;
+            StateHasChanged();
+        }
+    }
+
+    private void UpdateAudioAttributes()
+    {
+        if (isAutoplayEnabled)
+        {
+            audioAttributes["autoplay"] = "autoplay";
+        }
+        else
+        {
+            if (audioAttributes.ContainsKey("autoplay"))
+            {
+                audioAttributes.Remove("autoplay");
+            }
+        }
+    }
+
+    private async Task PlayAudio(string audioSrc)
+    {
+        await JSRuntime.InvokeVoidAsync("musicPlayerInterop.playAudio", audioSrc);
+    }
+}

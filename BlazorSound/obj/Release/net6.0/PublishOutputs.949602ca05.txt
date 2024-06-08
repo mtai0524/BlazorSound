@@ -1,0 +1,7 @@
+E:\BlazorSound\BlazorSound\obj\Release\net6.0\PubTmp\Out\BlazorSound.exe
+E:\BlazorSound\BlazorSound\obj\Release\net6.0\PubTmp\Out\appsettings.Development.json
+E:\BlazorSound\BlazorSound\obj\Release\net6.0\PubTmp\Out\appsettings.json
+E:\BlazorSound\BlazorSound\obj\Release\net6.0\PubTmp\Out\BlazorSound.dll
+E:\BlazorSound\BlazorSound\obj\Release\net6.0\PubTmp\Out\BlazorSound.deps.json
+E:\BlazorSound\BlazorSound\obj\Release\net6.0\PubTmp\Out\BlazorSound.runtimeconfig.json
+E:\BlazorSound\BlazorSound\obj\Release\net6.0\PubTmp\Out\BlazorSound.pdb

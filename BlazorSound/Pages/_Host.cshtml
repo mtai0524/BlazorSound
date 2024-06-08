@@ -1,0 +1,10 @@
+﻿@page "/"
+@namespace BlazorSound.Pages
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "_Layout";
+}
+
+<component type="typeof(App)" render-mode="ServerPrerendered" />
+<script src="~/js/audio.js"></script>
+<script src="~/js/musicplayerinterop.js"></script>

@@ -1,0 +1,82 @@
+﻿@page "/upload-file"
+@using Microsoft.AspNetCore.Components.Forms
+@inject IWebHostEnvironment Environment
+@inject NavigationManager Navigation
+
+<h3>Upload MP3 File</h3>
+
+@if (uploadSuccessMessage != null)
+{
+    <div class="alert alert-info">
+        @uploadSuccessMessage
+    </div>
+}
+<button @onclick="NavigateToMusicPlayer" class="btn btn-secondary">Go to Music Player</button>
+
+<InputFile OnChange="HandleFileSelected" />
+<button @onclick="HandleUpload" class="btn btn-primary" disabled="@isUploading">Upload</button>
+
+@if (isUploading)
+{
+    <div>
+        <p>Uploading... Please wait.</p>
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+}
+
+@code {
+    private IBrowserFile selectedFile;
+    private string uploadSuccessMessage;
+    private string uploadedFileName;
+    private bool isUploading = false;
+
+    private void HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        selectedFile = e.File;
+    }
+
+    private async Task HandleUpload()
+    {
+        if (selectedFile != null)
+        {
+            isUploading = true;
+            uploadSuccessMessage = null;
+            var uploadPath = Path.Combine(Environment.WebRootPath, "uploads");
+
+            // Tạo thư mục nếu chưa tồn tại
+            if (!Directory.Exists(uploadPath))
+            {
+                Directory.CreateDirectory(uploadPath);
+            }
+
+            uploadedFileName = selectedFile.Name;
+            var filePath = Path.Combine(uploadPath, uploadedFileName);
+
+            try
+            {
+                await using var fileStream = new FileStream(filePath, FileMode.Create);
+                await selectedFile.OpenReadStream(30001200000).CopyToAsync(fileStream);
+                uploadSuccessMessage = "File uploaded successfully!";
+            }
+            catch (Exception ex)
+            {
+                uploadSuccessMessage = $"File upload failed: {ex.Message}";
+            }
+            finally
+            {
+                isUploading = false;
+            }
+        }
+        else
+        {
+            uploadSuccessMessage = "Please select a valid file.";
+        }
+    }
+
+    private void NavigateToMusicPlayer()
+    {
+        Navigation.NavigateTo("/music-player");
+    }
+}

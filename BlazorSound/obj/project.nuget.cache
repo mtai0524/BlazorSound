@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "/KcCKDZIYMgNhaF+IKRlCg2Sr1t8Lj57KG0fGF9BjRASKcq9EgPSD80sowCs8oIBiuky87DUHUreOuet6WQo3g==",
+  "success": true,
+  "projectFilePath": "E:\\BlazorSound\\BlazorSound\\BlazorSound.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\PC\\.nuget\\packages\\microsoft.visualstudio.azure.containers.tools.targets\\1.19.5\\microsoft.visualstudio.azure.containers.tools.targets.1.19.5.nupkg.sha512"
+  ],
+  "logs": []
+}
