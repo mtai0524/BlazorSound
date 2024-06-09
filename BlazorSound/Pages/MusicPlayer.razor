@@ -1,6 +1,7 @@
 ﻿@page "/music-player"
 @inject IWebHostEnvironment Environment
 @inject IJSRuntime JSRuntime
+@inject IHttpContextAccessor HttpContextAccessor
 <h3>Music Player</h3>
 
 @if (mp3Files != null && mp3Files.Any())
@@ -20,7 +21,7 @@
 
     @if (!string.IsNullOrEmpty(selectedFile))
     {
-        <audio id="audioPlayer" controls @key="audioKey" @onended="HandleAudioEnded" @ref="audioElement" @attributes="audioAttributes">
+        <audio id="audioPlayerContainer" controls @key="audioKey" @onended="HandleAudioEnded" @attributes="audioAttributes">
             <source src="@selectedFile" type="audio/mpeg">
             Your browser does not support the audio element.
         </audio>
@@ -40,7 +41,6 @@ else
         <span>đang tắt auto play</span>
     }
 </button>
-
 @code {
     private List<string?> mp3Files = new List<string?>();
     private string? selectedFile;
@@ -49,21 +49,30 @@ else
     private bool isAutoplayEnabled = false;
     private ElementReference audioElement;
     private Dictionary<string, object> audioAttributes = new Dictionary<string, object>();
-    protected async override void OnInitialized()
+    private async Task InitializeComponent()
     {
-        LoadFiles();
-        AutoPlay();
+        await LoadFiles();
+        await AutoPlay();
 
-        // Check if there's any saved progress for the last played song
-        if (!string.IsNullOrEmpty(selectedFile))
+        var savedSong = await JSRuntime.InvokeAsync<string>("musicPlayerInterop.getCookie", "savedSong");
+        if (!string.IsNullOrEmpty(savedSong))
         {
-            double progress = await JSRuntime.InvokeAsync<double>("musicPlayerInterop.loadProgress", selectedFile);
-            await JSRuntime.InvokeVoidAsync("musicPlayerInterop.setAudioPosition", audioElement, progress);
+            selectedFile = savedSong;
+            PlayFile(Path.GetFileName(savedSong));
+        }
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender) // intance of OnInitialize
+    {
+        if (firstRender)
+        {
+            await InitializeComponent();
         }
     }
 
 
-    private void LoadFiles()
+
+  
+    private async Task LoadFiles()
     {
         var uploadPath = Path.Combine(Environment.WebRootPath, "uploads");
         if (Directory.Exists(uploadPath))
@@ -73,30 +82,20 @@ else
                                 .ToList();
         }
     }
-    private void AutoPlay()
+    private async Task AutoPlay()
     {
         isAutoplayEnabled = !isAutoplayEnabled;
         UpdateAudioAttributes();
     }
-    private async Task<double> GetAudioDuration(string audioSrc)
-    {
-        return await JSRuntime.InvokeAsync<double>("musicPlayerInterop.getAudioDuration", audioSrc);
-    }
-    private async void PlayFile(string fileName)
+    private async Task PlayFile(string fileName)
     {
         selectedFile = Path.Combine("uploads", fileName);
         currentTrackIndex = mp3Files.FindIndex(f => f == Path.GetFileName(fileName));
         audioKey++;
-
-        // Get the duration of the current song
-        double duration = await GetAudioDuration(selectedFile);
-
-        // Save the initial position as 0
-        await JSRuntime.InvokeVoidAsync("musicPlayerInterop.saveProgress", selectedFile, 0, duration);
-
+        await JSRuntime.InvokeVoidAsync("musicPlayerInterop.setCookie", "savedSong", selectedFile, 7);
+        await JSRuntime.InvokeVoidAsync("musicPlayerInterop.updatePlayTime");
         StateHasChanged();
     }
-
 
     private void DeleteFile(string fileName)
     {
@@ -114,16 +113,10 @@ else
         }
     }
 
-    private async void HandleAudioEnded()
+    private void HandleAudioEnded()
     {
         if (currentTrackIndex < mp3Files.Count - 1)
         {
-            // Get the saved progress
-            double progress = await JSRuntime.InvokeAsync<double>("musicPlayerInterop.loadProgress", mp3Files[currentTrackIndex + 1]);
-
-            // Set the audio element to the saved progress
-            await JSRuntime.InvokeVoidAsync("musicPlayerInterop.setAudioPosition", audioElement, progress);
-
             PlayFile(mp3Files[currentTrackIndex + 1]);
         }
         else
@@ -133,7 +126,6 @@ else
             StateHasChanged();
         }
     }
-
 
     private void UpdateAudioAttributes()
     {

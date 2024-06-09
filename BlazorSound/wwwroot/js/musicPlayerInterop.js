@@ -1,32 +1,30 @@
 ﻿// musicPlayerInterop.js
 window.musicPlayerInterop = {
-    playAudio: function (audioSrc) {
-        var audioElement = document.querySelector("audio");
-        if (audioElement) {
-            audioElement.src = audioSrc;
-            audioElement.play();
+    getCookie: function (name) {
+        const value = '; ' + document.cookie;
+        const parts = value.split('; ' + name + '=');
+        if (parts.length === 2) return parts.pop().split(';').shift();
+    },
+    setCookie: function (name, value, days) {
+        var expires = "";
+        if (days) {
+            var date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            expires = "; expires=" + date.toUTCString();
         }
+        document.cookie = name + "=" + (value || "") + expires + "; path=/";
     },
-    getAudioDuration: function (audioSrc) {
-        return new Promise((resolve) => {
-            const audioElement = document.createElement('audio');
-            audioElement.src = audioSrc;
-            audioElement.onloadedmetadata = () => resolve(audioElement.duration);
-        });
+   updatePlayTime: function () {
+       var audio = document.getElementById('audioPlayerContainer');
+       if (audio != null) {
+           audio.addEventListener('loadedmetadata', function () {
+               setInterval(function () {
+                   var currentTime = audio.currentTime;
+                   var cookieName = "playTime_";
+                   musicPlayerInterop.setCookie(cookieName, currentTime, 7);
+               }, 100);
+           });
+       }
     },
-    saveProgress: function (audioSrc, progress, duration) {
-        localStorage.setItem(`progress_${audioSrc}`, progress);
-        localStorage.setItem(`duration_${audioSrc}`, duration);
-    },
-    loadProgress: function (audioSrc) {
-        const progress = localStorage.getItem(`progress_${audioSrc}`);
-        const duration = localStorage.getItem(`duration_${audioSrc}`);
-        return parseFloat(progress) / parseFloat(duration);
-    },
-    setAudioPosition: function (audioElementRef, position) {
-        const audioElement = audioElementRef.current;
-        if (audioElement) {
-            audioElement.currentTime = position * audioElement.duration;
-        }
-    }
+
 };
