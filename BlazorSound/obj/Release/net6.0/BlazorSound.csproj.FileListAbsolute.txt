@@ -29,3 +29,4 @@ E:\BlazorSound\BlazorSound\obj\Release\net6.0\refint\BlazorSound.dll
 E:\BlazorSound\BlazorSound\obj\Release\net6.0\BlazorSound.pdb
 E:\BlazorSound\BlazorSound\obj\Release\net6.0\BlazorSound.genruntimeconfig.cache
 E:\BlazorSound\BlazorSound\obj\Release\net6.0\ref\BlazorSound.dll
+E:\BlazorSound\BlazorSound\obj\Release\net6.0\BlazorSound.sourcelink.json
