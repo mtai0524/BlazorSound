@@ -49,7 +49,6 @@
             var audio = document.getElementById('audioPlayerContainer');
             if (audio !== null) {
                 audio.currentTime = parseFloat(savedTime);
-                audio.play();
             }
         }
     }
