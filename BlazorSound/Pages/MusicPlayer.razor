@@ -2,6 +2,7 @@
 @inject IWebHostEnvironment Environment
 @inject IJSRuntime JSRuntime
 @inject IHttpContextAccessor HttpContextAccessor
+@using Microsoft.AspNetCore.Components
 <h3>Music Player</h3>
 
 @if (mp3Files != null && mp3Files.Any())
@@ -32,7 +33,7 @@ else
     <p>No MP3 files found.</p>
 }
 <button @onclick=AutoPlay>
-    @if(isAutoplayEnabled == true)
+    @if (isAutoplayEnabled == true)
     {
         <span>đang bật auto play</span>
     }
@@ -49,6 +50,8 @@ else
     private bool isAutoplayEnabled = false;
     private ElementReference audioElement;
     private Dictionary<string, object> audioAttributes = new Dictionary<string, object>();
+    private CancellationTokenSource cancellationTokenSource;
+   
     private async Task InitializeComponent()
     {
         await LoadFiles();
@@ -58,10 +61,42 @@ else
         if (!string.IsNullOrEmpty(savedSong))
         {
             selectedFile = savedSong;
-            PlayFile(Path.GetFileName(savedSong));
+            await PlayFile(Path.GetFileName(savedSong));
+            await JSRuntime.InvokeVoidAsync("musicPlayerInterop.playMusicFromSavedTime", selectedFile);
         }
+
+        cancellationTokenSource = new CancellationTokenSource();
+        var token = cancellationTokenSource.Token;
+
+        var intervalMilliseconds = 500; 
+        _ = Task.Run(async () =>
+        {
+            while (!token.IsCancellationRequested)
+            {
+                try
+                {
+                    await JSRuntime.InvokeVoidAsync("musicPlayerInterop.updatePlayTime", selectedFile);
+                    await Task.Delay(intervalMilliseconds, token);
+                }
+                catch (TaskCanceledException)
+                {
+                    break;
+                }
+                catch (JSException ex)
+                {
+                    Console.WriteLine($"JavaScript interop error: {ex.Message}");
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error: {ex.Message}");
+                    break;
+                }
+            }
+        });
     }
-    protected override async Task OnAfterRenderAsync(bool firstRender) // intance of OnInitialize
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
@@ -69,9 +104,6 @@ else
         }
     }
 
-
-
-  
     private async Task LoadFiles()
     {
         var uploadPath = Path.Combine(Environment.WebRootPath, "uploads");
@@ -82,18 +114,21 @@ else
                                 .ToList();
         }
     }
+
     private async Task AutoPlay()
     {
         isAutoplayEnabled = !isAutoplayEnabled;
         UpdateAudioAttributes();
     }
+
     private async Task PlayFile(string fileName)
     {
         selectedFile = Path.Combine("uploads", fileName);
         currentTrackIndex = mp3Files.FindIndex(f => f == Path.GetFileName(fileName));
         audioKey++;
         await JSRuntime.InvokeVoidAsync("musicPlayerInterop.setCookie", "savedSong", selectedFile, 7);
-        await JSRuntime.InvokeVoidAsync("musicPlayerInterop.updatePlayTime");
+        await JSRuntime.InvokeVoidAsync("musicPlayerInterop.updatePlayTime", selectedFile);
+        await JSRuntime.InvokeVoidAsync("musicPlayerInterop.playMusicFromSavedTime", selectedFile);
         StateHasChanged();
     }
 
