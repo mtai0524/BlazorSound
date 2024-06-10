@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "cc2n8ZiU/VO49Wjt/QKtdTdKKG94PCTZitiQZ9xuWnw=",
+  "Hash": "x0KC6lcoJhSFbmbXKYklNSskPcJESx5ZJ6eE0a7i57U=",
   "Source": "BlazorSound",
   "BasePath": "_content/BlazorSound",
   "Mode": "Default",
@@ -53,6 +53,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "E:\\BlazorSound\\BlazorSound\\obj\\Release\\net6.0\\scopedcss\\projectbundle\\BlazorSound.bundle.scp.css"
+    },
+    {
+      "Identity": "E:\\BlazorSound\\BlazorSound\\wwwroot\\app.css",
+      "SourceId": "BlazorSound",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\BlazorSound\\BlazorSound\\wwwroot\\",
+      "BasePath": "_content/BlazorSound",
+      "RelativePath": "app.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\app.css"
     },
     {
       "Identity": "E:\\BlazorSound\\BlazorSound\\wwwroot\\css\\bootstrap\\bootstrap.min.css",

@@ -38,13 +38,14 @@
                         <img class="h-8 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500" alt="Your Company">
                     </div>
                     <div class="hidden sm:ml-6 sm:block">
-                        <div class="flex space-x-4">
+                        <div class="flex space-x-4 mynavbar">
                             <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
-                            <a href="" class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white" aria-current="page">Home</a>
+                            <a href="" class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white bg-green-700 text-white" aria-current="page">Home</a>
                             <a href="upload-file" class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Upload</a>
                             <a href="music-player" class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Library</a>
                             <a href="#" class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Calendar</a>
                         </div>
+
                     </div>
                 </div>
                 <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
@@ -82,11 +83,11 @@
 
         <!-- Mobile menu, show/hide based on menu state. -->
         <div class="sm:hidden" id="mobile-menu">
-            <div class="space-y-1 px-2 pb-3 pt-2">
+            <div class="space-y-1 px-2 pb-3 pt-2 mynavbar">
                 <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
-                <a href="#" class="block rounded-md bg-gray-900 px-3 py-2 text-base font-medium text-white" aria-current="page">Dashboard</a>
-                <a href="#" class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Team</a>
-                <a href="#" class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Projects</a>
+                <a href="" class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 bg-green-700 hover:bg-gray-700 hover:text-white">Team</a>
+                <a href="upload-file" class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Team</a>
+                <a href="music-player" class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Projects</a>
                 <a href="#" class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Calendar</a>
             </div>
         </div>
@@ -109,20 +110,46 @@
     <script src="_framework/blazor.server.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {
-            const links = document.querySelectorAll('.flex a');
+            const links = document.querySelectorAll('.mynavbar a');
+            const activeLinkKey = 'activeLink'; // Key for storing the active link in localStorage
 
+            // Function to set the active link style
+            const setActiveLink = (link) => {
+                links.forEach(l => l.classList.remove('bg-green-700', 'text-white'));
+                link.classList.add('bg-green-700', 'text-white');
+            };
+
+            // Function to handle link click
+            const handleLinkClick = (event) => {
+                const clickedLink = event.target;
+                setActiveLink(clickedLink);
+                localStorage.setItem(activeLinkKey, clickedLink.getAttribute('href')); // Store the active link in localStorage
+            };
+
+            // Add event listener to each link
             links.forEach(link => {
-                link.addEventListener('click', (event) => {
-                    links.forEach(l => l.classList.remove('bg-green-700', 'text-white'));
-                    link.classList.add('bg-green-700', 'text-white');
-                });
+                link.addEventListener('click', handleLinkClick);
             });
+
+            // Restore active link on page load
+            const activeLink = localStorage.getItem(activeLinkKey);
+            if (activeLink) {
+                const linkToActivate = document.querySelector(`.flex a[href="${activeLink}"]`);
+                if (linkToActivate) {
+                    setActiveLink(linkToActivate);
+                }
+            }
         });
+
 
         document.addEventListener('DOMContentLoaded', (event) => {
             const userMenuButton = document.getElementById('user-menu-button');
             const userMenu = document.getElementById('user-menu');
-
+            const mobileMenu = document.getElementById('mobile-menu-button');
+            const mobileMenuContainer = document.getElementById('mobile-menu');
+            mobileMenu.addEventListener('click', () => {
+                mobileMenuContainer.classList.toggle('hidden');
+            });
             userMenuButton.addEventListener('click', () => {
                 userMenu.classList.toggle('hidden');
             });
