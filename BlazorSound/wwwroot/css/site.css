@@ -71,4 +71,27 @@ a, .btn-link {
     }
 
 }
+@media screen and (min-width: 400px) {
+    .info-container{
+        width:70%; /* Ẩn phần info-container và info-content khi màn hình nhỏ hơn hoặc bằng 600px */
+    }
+    .info-content{
+        width:100%;
+    }
+
+}
+
+*::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+}
+
+*::-webkit-scrollbar-thumb {
+    background: gray;
+    border-radius: 4px;
+}
+
+*::-webkit-scrollbar-track {
+    /* background: transparent; */
+}
 

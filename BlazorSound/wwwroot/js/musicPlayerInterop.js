@@ -1,30 +1,21 @@
 ﻿window.musicPlayerInterop = {
     playTimeIntervalId: null,
 
-    getCookie: function (name) {
-        const value = '; ' + document.cookie;
-        const parts = value.split('; ' + name + '=');
-        if (parts.length === 2) return parts.pop().split(';').shift();
+    getLocalStorage: function (key) {
+        return localStorage.getItem(key);
     },
 
-    setCookie: function (name, value, days) {
-        var expires = "";
-        if (days) {
-            var date = new Date();
-            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-            expires = "; expires=" + date.toUTCString();
-        }
-        document.cookie = name + "=" + (value || "") + expires + "; path=/";
+    setLocalStorage: function (key, value) {
+        localStorage.setItem(key, value);
     },
 
-    deletePlayTimeCookies: function () {
-        const cookies = document.cookie.split("; ");
-        cookies.forEach(cookie => {
-            if (cookie.startsWith("playTime_")) {
-                const cookieName = cookie.split("=")[0];
-                document.cookie = cookieName + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    deletePlayTimeLocalStorage: function () {
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key.startsWith("playTime_")) {
+                localStorage.removeItem(key);
             }
-        });
+        }
     },
 
     updatePlayTime: function (selectedFile) {
@@ -37,14 +28,14 @@
         if (audio != null) {
             this.playTimeIntervalId = setInterval(function () {
                 var currentTime = audio.currentTime;
-                var cookieName = "playTime_" + selectedFile;
-                musicPlayerInterop.setCookie(cookieName, currentTime, 7);
+                var storageKey = "playTime_" + selectedFile;
+                musicPlayerInterop.setLocalStorage(storageKey, currentTime);
             }, 1000);
         }
     },
 
     playMusicFromSavedTime: function (selectedFile) {
-        var savedTime = musicPlayerInterop.getCookie("playTime_" + selectedFile);
+        var savedTime = musicPlayerInterop.getLocalStorage("playTime_" + selectedFile);
         if (savedTime !== undefined && savedTime !== null) {
             var audio = document.getElementById('audioPlayerContainer');
             if (audio !== null) {
@@ -52,5 +43,4 @@
             }
         }
     },
-
 };

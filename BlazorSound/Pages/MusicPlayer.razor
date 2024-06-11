@@ -32,8 +32,8 @@ else
 {
     <p>No MP3 files found.</p>
 }
-<button @onclick=AutoPlay>
-    @if (isAutoplayEnabled == true)
+<button @onclick=ToggleAutoPlay>
+    @if (isAutoplayEnabled)
     {
         <span>đang bật auto play</span>
     }
@@ -42,6 +42,7 @@ else
         <span>đang tắt auto play</span>
     }
 </button>
+
 @code {
     private List<string?> mp3Files = new List<string?>();
     private string? selectedFile;
@@ -51,13 +52,12 @@ else
     private ElementReference audioElement;
     private Dictionary<string, object> audioAttributes = new Dictionary<string, object>();
     private CancellationTokenSource cancellationTokenSource;
-   
+
     private async Task InitializeComponent()
     {
         await LoadFiles();
-        await AutoPlay();
 
-        var savedSong = await JSRuntime.InvokeAsync<string>("musicPlayerInterop.getCookie", "savedSong");
+        var savedSong = await JSRuntime.InvokeAsync<string>("musicPlayerInterop.getLocalStorage", "savedSong");
         if (!string.IsNullOrEmpty(savedSong))
         {
             selectedFile = savedSong;
@@ -65,10 +65,17 @@ else
             await JSRuntime.InvokeVoidAsync("musicPlayerInterop.playMusicFromSavedTime", selectedFile);
         }
 
+        var isAutoplayLocal = await JSRuntime.InvokeAsync<string>("musicPlayerInterop.getLocalStorage", "auto_play");
+        if (!string.IsNullOrEmpty(isAutoplayLocal) && bool.TryParse(isAutoplayLocal, out bool autoPlayEnabled))
+        {
+            isAutoplayEnabled = autoPlayEnabled;
+            UpdateAudioAttributes();
+        }
+
         cancellationTokenSource = new CancellationTokenSource();
         var token = cancellationTokenSource.Token;
 
-        var intervalMilliseconds = 1000; 
+        var intervalMilliseconds = 1000;
         _ = Task.Run(async () =>
         {
             while (!token.IsCancellationRequested)
@@ -101,6 +108,7 @@ else
         if (firstRender)
         {
             await InitializeComponent();
+            StateHasChanged(); // Ensure UI update after initialization
         }
     }
 
@@ -112,13 +120,16 @@ else
             mp3Files = Directory.GetFiles(uploadPath, "*.mp3")
                                 .Select(Path.GetFileName)
                                 .ToList();
+            StateHasChanged();
         }
     }
 
-    private async Task AutoPlay()
+    private async Task ToggleAutoPlay()
     {
         isAutoplayEnabled = !isAutoplayEnabled;
         UpdateAudioAttributes();
+        await JSRuntime.InvokeVoidAsync("musicPlayerInterop.setLocalStorage", "auto_play", isAutoplayEnabled.ToString());
+        StateHasChanged(); // Ensure UI update
     }
 
     private async Task PlayFile(string fileName)
@@ -126,11 +137,12 @@ else
         selectedFile = Path.Combine("uploads", fileName);
         currentTrackIndex = mp3Files.FindIndex(f => f == Path.GetFileName(fileName));
         audioKey++;
-        // await JSRuntime.InvokeVoidAsync("musicPlayerInterop.deletePlayTimeCookies");
 
-        await JSRuntime.InvokeVoidAsync("musicPlayerInterop.setCookie", "savedSong", selectedFile, 7);
+        await JSRuntime.InvokeVoidAsync("musicPlayerInterop.setLocalStorage", "savedSong", selectedFile);
+
         await JSRuntime.InvokeVoidAsync("musicPlayerInterop.updatePlayTime", selectedFile);
         await JSRuntime.InvokeVoidAsync("musicPlayerInterop.playMusicFromSavedTime", selectedFile);
+
         StateHasChanged();
     }
 
@@ -143,7 +155,7 @@ else
             if (File.Exists(filePath))
             {
                 File.Delete(filePath);
-                LoadFiles(); // Reload
+                await LoadFiles(); // Reload
                 if (selectedFile == Path.Combine("uploads", fileName))
                 {
                     selectedFile = null;
@@ -152,10 +164,6 @@ else
                 StateHasChanged();
             }
         }
-        else
-        {
-        }
-        
     }
 
     private void HandleAudioEnded()
@@ -185,10 +193,5 @@ else
                 audioAttributes.Remove("autoplay");
             }
         }
-    }
-
-    private async Task PlayAudio(string audioSrc)
-    {
-        await JSRuntime.InvokeVoidAsync("musicPlayerInterop.playAudio", audioSrc);
     }
 }

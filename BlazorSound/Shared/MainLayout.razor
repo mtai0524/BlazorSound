@@ -14,7 +14,7 @@
 
     article {
         width: 100%;
-        background-color: white;
+        background-color: transparent;
         padding: 0 !important;
     }
 
@@ -28,7 +28,7 @@
     .info-content {
 
         margin-right: 10px;
-        background-color: white;
+        background-color: transparent;
         box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px, rgb(51, 51, 51) 0px 0px 0px 3px;
         max-height: 100%;
     }
@@ -37,9 +37,12 @@
     <div class="sidebar d-flex flex-column ">
         <NavMenu></NavMenu>
     </div>
-    <main>
+    <main >
         <article>
             <div>
+                <button class="border p-2" onclick="document.body.classList.toggle('dark-mode')">
+                    Switch theme
+                </button>
                 <!-- Nội dung của phần body -->
                 @Body
             </div>
