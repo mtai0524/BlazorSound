@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "ePAZHvQ0fBa0GS/LnoHPHlcKkG6Q07v3fY8O+VwjMOc=",
+  "Hash": "Aj6Ne5Bncl4WCFYxHtM9EEhrMYHD3dFDtMPFr1006uQ=",
   "Source": "BlazorSound",
   "BasePath": "_content/BlazorSound",
   "Mode": "Default",
@@ -414,25 +414,6 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\uploads\\DOIProdRIO-52HzRio-12890598.mp3"
-    },
-    {
-      "Identity": "E:\\BlazorSound\\BlazorSound\\wwwroot\\uploads\\nhac.mp3",
-      "SourceId": "BlazorSound",
-      "SourceType": "Discovered",
-      "ContentRoot": "E:\\BlazorSound\\BlazorSound\\wwwroot\\",
-      "BasePath": "_content/BlazorSound",
-      "RelativePath": "uploads/nhac.mp3",
-      "AssetKind": "All",
-      "AssetMode": "All",
-      "AssetRole": "Primary",
-      "AssetMergeBehavior": "PreferTarget",
-      "AssetMergeSource": "",
-      "RelatedAsset": "",
-      "AssetTraitName": "",
-      "AssetTraitValue": "",
-      "CopyToOutputDirectory": "Never",
-      "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot\\uploads\\nhac.mp3"
     }
   ]
 }

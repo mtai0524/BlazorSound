@@ -62,3 +62,13 @@ a, .btn-link {
     .blazor-error-boundary::after {
         content: "An error has occurred."
     }
+
+
+
+@media screen and (max-width: 600px) {
+    .info-container, .info-content {
+        visibility: hidden; /* Ẩn phần info-container và info-content khi màn hình nhỏ hơn hoặc bằng 600px */
+    }
+
+}
+

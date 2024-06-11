@@ -39,7 +39,7 @@
                 var currentTime = audio.currentTime;
                 var cookieName = "playTime_" + selectedFile;
                 musicPlayerInterop.setCookie(cookieName, currentTime, 7);
-            }, 500);
+            }, 1000);
         }
     },
 
@@ -49,8 +49,8 @@
             var audio = document.getElementById('audioPlayerContainer');
             if (audio !== null) {
                 audio.currentTime = parseFloat(savedTime);
-                audio.play();
             }
         }
-    }
+    },
+
 };

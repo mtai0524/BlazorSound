@@ -68,7 +68,7 @@ else
         cancellationTokenSource = new CancellationTokenSource();
         var token = cancellationTokenSource.Token;
 
-        var intervalMilliseconds = 500; 
+        var intervalMilliseconds = 1000; 
         _ = Task.Run(async () =>
         {
             while (!token.IsCancellationRequested)
@@ -126,26 +126,36 @@ else
         selectedFile = Path.Combine("uploads", fileName);
         currentTrackIndex = mp3Files.FindIndex(f => f == Path.GetFileName(fileName));
         audioKey++;
+        // await JSRuntime.InvokeVoidAsync("musicPlayerInterop.deletePlayTimeCookies");
+
         await JSRuntime.InvokeVoidAsync("musicPlayerInterop.setCookie", "savedSong", selectedFile, 7);
         await JSRuntime.InvokeVoidAsync("musicPlayerInterop.updatePlayTime", selectedFile);
         await JSRuntime.InvokeVoidAsync("musicPlayerInterop.playMusicFromSavedTime", selectedFile);
         StateHasChanged();
     }
 
-    private void DeleteFile(string fileName)
+    private async void DeleteFile(string fileName)
     {
-        var filePath = Path.Combine(Environment.WebRootPath, "uploads", fileName);
-        if (File.Exists(filePath))
+        bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", $"Dữ liệu sau khi xóa sẽ không thể khôi phục");
+        if (confirmed)
         {
-            File.Delete(filePath);
-            LoadFiles(); // Reload
-            if (selectedFile == Path.Combine("uploads", fileName))
+            var filePath = Path.Combine(Environment.WebRootPath, "uploads", fileName);
+            if (File.Exists(filePath))
             {
-                selectedFile = null;
-                audioKey++;
+                File.Delete(filePath);
+                LoadFiles(); // Reload
+                if (selectedFile == Path.Combine("uploads", fileName))
+                {
+                    selectedFile = null;
+                    audioKey++;
+                }
+                StateHasChanged();
             }
-            StateHasChanged();
         }
+        else
+        {
+        }
+        
     }
 
     private void HandleAudioEnded()

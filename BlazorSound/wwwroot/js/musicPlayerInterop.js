@@ -39,7 +39,7 @@
                 var currentTime = audio.currentTime;
                 var cookieName = "playTime_" + selectedFile;
                 musicPlayerInterop.setCookie(cookieName, currentTime, 7);
-            }, 500);
+            }, 1000);
         }
     },
 
@@ -51,5 +51,6 @@
                 audio.currentTime = parseFloat(savedTime);
             }
         }
-    }
+    },
+
 };

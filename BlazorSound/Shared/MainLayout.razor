@@ -1,14 +1,65 @@
 ﻿@inherits LayoutComponentBase
-
 <PageTitle>BlazorSound</PageTitle>
+<style>
+    html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+    }
 
+    main {
+        display:flex;
+        justify-content:space-between;
+    }
+
+    article {
+        width: 100%;
+        background-color: white;
+        padding: 0 !important;
+    }
+
+    .info-container {
+        height: 90vh;
+        width: 40%; /* Width của container phải 100% để nó chiếm 100% width của phần cha */
+        display: flex;
+        justify-content: flex-end; /* Để dịch chuyển nội dung sang phải */
+    }
+
+    .info-content {
+
+        margin-right: 10px;
+        background-color: white;
+        box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px, rgb(51, 51, 51) 0px 0px 0px 3px;
+        max-height: 100%;
+    }
+</style>
 <div class="page">
-    <div class="sidebar">
+    <div class="sidebar d-flex flex-column ">
+        <NavMenu></NavMenu>
     </div>
-
     <main>
-        <article class="content px-4">
-            @Body
+        <article>
+            <div>
+                <!-- Nội dung của phần body -->
+                @Body
+            </div>
         </article>
+
+        <div class="info-container">
+            <div class="info-content">
+                <!-- Nội dung của InfoMusic -->
+                <InfoMusic></InfoMusic>
+            </div>
+        </div>
     </main>
+
 </div>
+<footer style="background-color:red; height:10vh; position: fixed; bottom: 0; width: 100%;">
+    <!-- Thẻ audio như là footer -->
+    <div class="d-flex justify-content-center align-items-center" style="background-color:yellow; height:100%;">
+        <audio controls>
+            <source src="your-audio-file.mp3" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+    </div>
+</footer>
