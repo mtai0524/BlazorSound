@@ -19,28 +19,32 @@
     }
 
     .info-container {
-        height: 90vh;
+        height: 85vh;
         width: 40%; /* Width của container phải 100% để nó chiếm 100% width của phần cha */
         display: flex;
         justify-content: flex-end; /* Để dịch chuyển nội dung sang phải */
     }
 
     .info-content {
-
+        max-height:100%;
         margin-right: 10px;
         background-color: transparent;
-        box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px, rgb(51, 51, 51) 0px 0px 0px 3px;
-        max-height: 100%;
+    }
+    .sidebar{
+        background-color:transparent;
+        background-image: none !important;
     }
 </style>
 <div class="page">
     <div class="sidebar d-flex flex-column ">
-        <NavMenu></NavMenu>
+        <div class="container-nav br-tai" style="background-color:black;margin-top:10px;margin-left:5px; max-height:88%;height:90%; box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px, rgb(51, 51, 51) 0px 0px 0px 3px; ">
+            <NavMenu></NavMenu>
+        </div>
     </div>
     <main >
         <article>
             <div>
-                <button class="border p-2" onclick="document.body.classList.toggle('dark-mode')">
+                <button id="btn-switch-theme" class="border p-2" @onclick="SwitchTheme">
                     Switch theme
                 </button>
                 <!-- Nội dung của phần body -->
@@ -66,3 +70,20 @@
         </audio>
     </div>
 </footer>
+
+@code{
+    [Inject] private IJSRuntime JSRuntime { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("initializeTheme");
+        }
+    }
+
+    private async Task SwitchTheme()
+    {
+        await JSRuntime.InvokeVoidAsync("switchTheme");
+    }
+}

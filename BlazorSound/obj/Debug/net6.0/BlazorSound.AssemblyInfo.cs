@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BlazorSound")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3faa0f42964b592ee8c9e1920ddfdfb2eee81ffa")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5d73be58c202616832358834e1bcc24d7a934cd2")]
 [assembly: System.Reflection.AssemblyProductAttribute("BlazorSound")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BlazorSound")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
