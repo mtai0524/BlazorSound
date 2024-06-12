@@ -65,24 +65,18 @@ a, .btn-link {
 
 
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 900px) {
     .info-container, .info-content {
         visibility: hidden; /* Ẩn phần info-container và info-content khi màn hình nhỏ hơn hoặc bằng 600px */
-    }
-
-}
-@media screen and (min-width: 400px) {
-    .info-container{
-        width:70%; /* Ẩn phần info-container và info-content khi màn hình nhỏ hơn hoặc bằng 600px */
-    }
-    .info-content{
-        width:100%;
     }
 
 }
 @media screen and (max-width: 641px)  {
     .container-nav {
         margin-top: 0px !important;
+        margin: 0 !important;
+        border-radius: 0px !important;
+        box-shadow:none !important;
     }
 }
 

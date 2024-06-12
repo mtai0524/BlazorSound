@@ -825,7 +825,9 @@ video {
 .gap-y-6 {
   row-gap: 1.5rem;
 }
-
+.br-tai{
+    border-radius: 6px;
+}
 .space-x-4 > :not([hidden]) ~ :not([hidden]) {
   --tw-space-x-reverse: 0;
   margin-right: calc(1rem * var(--tw-space-x-reverse));

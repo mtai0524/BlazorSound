@@ -34,19 +34,48 @@
         background-color:transparent;
         background-image: none !important;
     }
+
+    .theme-switch-button {
+        padding: 10px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        width: 30px;
+        height: 30px; 
+        right: 0;
+        position:absolute;
+        background-color: #0F1920;
+        border:1px solid;
+        margin:5px;
+    }
+
+        .theme-switch-button i {
+            font-size: 12px;
+            margin-right:10px;
+        }
 </style>
 <div class="page">
     <div class="sidebar d-flex flex-column ">
-        <div class="container-nav br-tai" style="background-color:black;margin-top:10px;margin-left:5px; max-height:88%;height:90%; box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px, rgb(51, 51, 51) 0px 0px 0px 3px; ">
+        <div class="container-nav br-tai" style="background-color:white;margin-top:10px;margin-left:5px; max-height:88%;height:90%; box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px, rgb(51, 51, 51) 0px 0px 0px 3px; ">
             <NavMenu></NavMenu>
         </div>
     </div>
-    <main >
-        <article>
+        <article class="container-man" style="padding:8px !important">
             <div>
-                <button id="btn-switch-theme" class="border p-2" @onclick="SwitchTheme">
-                    Switch theme
-                </button>
+                <div style="position:relative">
+                    <button id="btn-switch-theme" class="theme-switch-button" @onclick="SwitchTheme">
+                        @if (isDarkMode)
+                        {
+                            <i class="fa-solid fa-moon"></i>
+                        }
+                        else
+                        {
+                            <i style="color:white" class="fa-solid fa-sun"></i>
+                        }
+                    </button>
+                </div>
                 <!-- Nội dung của phần body -->
                 @Body
             </div>
@@ -58,12 +87,11 @@
                 <InfoMusic></InfoMusic>
             </div>
         </div>
-    </main>
 
 </div>
-<footer style="background-color:red; height:10vh; position: fixed; bottom: 0; width: 100%;">
+<footer style="z-index:100;border:2px solid; height:10vh; position: fixed; bottom: 0; width: 100%;">
     <!-- Thẻ audio như là footer -->
-    <div class="d-flex justify-content-center align-items-center" style="background-color:yellow; height:100%;">
+    <div class="d-flex justify-content-center align-items-center" style="height:100%;">
         <audio controls>
             <source src="your-audio-file.mp3" type="audio/mpeg">
             Your browser does not support the audio element.
@@ -73,17 +101,21 @@
 
 @code{
     [Inject] private IJSRuntime JSRuntime { get; set; }
+    bool isDarkMode;
+    private async Task<bool> InitializeTheme()
+    {
+        return await JSRuntime.InvokeAsync<bool>("initializeTheme");
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            await JSRuntime.InvokeVoidAsync("initializeTheme");
+            isDarkMode = await InitializeTheme();
         }
     }
-
     private async Task SwitchTheme()
     {
-        await JSRuntime.InvokeVoidAsync("switchTheme");
+       isDarkMode = await JSRuntime.InvokeAsync<bool>("switchTheme");
     }
 }
